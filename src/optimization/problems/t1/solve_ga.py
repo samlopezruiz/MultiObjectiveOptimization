@@ -17,7 +17,6 @@ if __name__ == '__main__':
     name = 'f1_t1'
     fx, bounds, bits = problems[name]
 
-    # ind_gen_fn, obj_fn, mut_fn, cross_fn = real_create_funcs(fx, bounds, cfg['mx_pb'], op=1, isint=False)
     ind_gen_fn, obj_fn, mut_fn, cross_fn = real_create_sbx_funcs(fx, bounds, cfg['mx_pb'], eta=0.5, isint=False)
     ga = GA(ind_gen_fn, cross_fn, mut_fn, obj_fn, cfg['selec'], verbose=0)
     ga.set_params(cfg['n_pop'], cfg['cx_pb'], 1, cfg['elitism_p'])
