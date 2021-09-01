@@ -7,7 +7,7 @@ import seaborn as sns
 
 sns.set_theme()
 sns.set_context("poster")
-# test for commit
+
 if __name__ == '__main__':
     # %% Parámetros
     alpha_n = .1
