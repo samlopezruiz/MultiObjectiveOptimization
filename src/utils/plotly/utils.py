@@ -44,6 +44,11 @@ def set_y_labels(f, features, fig):
         fig['layout']['yaxis' + str(i + 1)]['title'] = features[i]
 
 
+def new_dir(file_path):
+    if not os.path.exists(file_path):
+        os.makedirs(file_path)
+
+
 def plotly_save(fig, file_path, size):
     today = date.today()
 

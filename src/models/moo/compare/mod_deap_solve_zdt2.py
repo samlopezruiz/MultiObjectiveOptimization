@@ -43,7 +43,7 @@ if __name__ == '__main__':
     ref_dirs = get_reference_directions("das-dennis", 3, n_partitions=12)
     survive = MyReferenceDirectionSurvival(ref_dirs)
     _ = survive.do(res, len(res))
-    plot_pop_obj_space(ind_to_fitness_array(survive.opt))
+    plot_pop_obj_space(ind_to_fitness_array(survive.opt), save=True, file_path=['img', 'opt_res'])
 
     # Plotting hypervolume
     plot_hist_hv(logbook, lib='deap')

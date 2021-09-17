@@ -1,9 +1,12 @@
+import time
+
 import numpy as np
 import plotly.io as pio
 from plotly import graph_objects as go
 from plotly.subplots import make_subplots
 from src.models.moo.deap.nsgaiii import find_ideal_point, find_extreme_points, construct_hyperplane, \
     normalize_objectives, generate_reference_points, associate, ind_to_fitness_array, plane_from_intercepts
+from src.utils.plotly.utils import plotly_save
 
 pio.renderers.default = "browser"
 
@@ -64,7 +67,7 @@ def add_3d_surface_trace(xrange, yrange, z, opacity=0.1):
     )
 
 
-def plot_objective_space(pop, label_scale=1, plot_norm=True):
+def plot_objective_space(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080), plot_norm=True):
     if len(pop[0].fitness.values) <= 0:
         print('Cannot plot: individuals have no evaluation')
         return
@@ -104,8 +107,12 @@ def plot_objective_space(pop, label_scale=1, plot_norm=True):
     fig.update_yaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
     fig.show()
 
+    time.sleep(1.5)
+    if file_path is not None and save is True:
+        plotly_save(fig, file_path, size)
 
-def plot_norm_objective_space(pop, label_scale=1):
+
+def plot_norm_objective_space(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080)):
     if len(pop[0].fitness.values) <= 0:
         print('Cannot plot: individuals have no evaluation')
         return
@@ -147,8 +154,12 @@ def plot_norm_objective_space(pop, label_scale=1):
     fig.update_yaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
     fig.show()
 
+    time.sleep(1.5)
+    if file_path is not None and save is True:
+        plotly_save(fig, file_path, size)
 
-def plot_pop_obj_space(pop, label_scale=1):
+
+def plot_pop_obj_space(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080)):
 
     fig = make_subplots(rows=1, cols=1)
     traces = []
@@ -172,9 +183,12 @@ def plot_pop_obj_space(pop, label_scale=1):
     fig.update_xaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
     fig.update_yaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
     fig.show()
+    time.sleep(1.5)
+    if file_path is not None and save is True:
+        plotly_save(fig, file_path, size)
 
 
-def plot_pop_obj_hist(pop_hist, label_scale=1):
+def plot_pop_obj_hist(pop_hist, save=False, file_path=None, label_scale=1, size=(1980, 1080)):
     fig = make_subplots(rows=1, cols=1)
     traces = []
 
@@ -203,3 +217,7 @@ def plot_pop_obj_hist(pop_hist, label_scale=1):
     fig.update_xaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
     fig.update_yaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
     fig.show()
+
+    time.sleep(1.5)
+    if file_path is not None and save is True:
+        plotly_save(fig, file_path, size)
