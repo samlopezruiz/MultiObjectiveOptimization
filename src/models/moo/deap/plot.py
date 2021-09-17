@@ -189,8 +189,9 @@ def plot_pop_obj_hist(pop_hist, label_scale=1):
     step_size = len(pop_hist) // plot_gens
     for i in range(0, len(pop_hist) + step_size, step_size):
         ix = min(i, len(pop_hist) - 1)
+        color_ix = 1 if i == min(i, len(pop_hist) - 1) else 0
         traces.append(add_3d_scatter_trace(pop_hist[ix], name='gen ' + str(ix),
-                                           ix=0, markersize=4, opacity=ix / len(pop_hist)))
+                                           ix=color_ix, markersize=4, opacity=ix / len(pop_hist)))
 
     fig = go.Figure(data=traces)
     fig.update_layout(scene=dict(

@@ -27,7 +27,7 @@ def prepare_toolbox(problem_instance, selection_func, number_of_variables, bound
     toolbox.pop_size = pop_size  # population size
     toolbox.max_gen = max_gen  # max number of iteration
     toolbox.mut_prob = 1 / number_of_variables
-    toolbox.cross_prob = 0.3
+    toolbox.cross_prob = 0.9
 
     return toolbox
 

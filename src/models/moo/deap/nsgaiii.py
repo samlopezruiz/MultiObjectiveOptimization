@@ -3,6 +3,9 @@ import math
 
 import numpy as np
 from deap import tools
+from pymoo.factory import get_reference_directions
+
+from src.models.moo.deap.survive import MyReferenceDirectionSurvival
 
 
 class ReferencePoint(list):
@@ -13,6 +16,7 @@ class ReferencePoint(list):
         list.__init__(self, *args)
         self.associations_count = 0
         self.associations = []
+
 
 def plane_from_intercepts(intercepts, mesh_size=0.01):
     xrange = np.arange(0, math.ceil(intercepts[0]) + mesh_size, mesh_size)
@@ -31,6 +35,7 @@ def plane_from_intercepts(intercepts, mesh_size=0.01):
 def ind_to_fitness_array(pop, val='values'):
     res = [[getattr(ind.fitness, val)[0], getattr(ind.fitness, val)[1], getattr(ind.fitness, val)[2]] for ind in pop]
     return np.array(res)
+
 
 def generate_reference_points(num_objs, num_divisions_per_obj=4):
     '''Generates reference points for NSGA-III selection. This code is based on
@@ -147,7 +152,8 @@ def niching_select(individuals, k):
     intercepts = construct_hyperplane(individuals, extremes)
     normalize_objectives(individuals, intercepts, ideal_point)
 
-    reference_points = generate_reference_points(len(individuals[0].fitness.values))
+    reference_points = [ReferencePoint(x) for x in get_reference_directions("das-dennis", 3, n_partitions=12)]
+    # reference_points = generate_reference_points(len(individuals[0].fitness.values))
 
     associate(individuals, reference_points)
 
@@ -173,6 +179,12 @@ def niching_select(individuals, k):
         else:
             reference_points.remove(chosen_rp)
     return res
+
+
+def get_sel_nsga_iii_pymoo():
+    ref_dirs = get_reference_directions("das-dennis", 3, n_partitions=12)
+    survive = MyReferenceDirectionSurvival(ref_dirs)
+    return survive.do
 
 
 def sel_nsga_iii(individuals, k):
