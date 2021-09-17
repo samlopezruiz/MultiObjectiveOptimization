@@ -10,7 +10,6 @@ from src.utils.plotly.utils import plotly_save
 
 pio.renderers.default = "browser"
 
-
 colors = [
     '#1f77b4',  # muted blue
     '#2ca02c',  # cooked asparagus green
@@ -67,7 +66,8 @@ def add_3d_surface_trace(xrange, yrange, z, opacity=0.1):
     )
 
 
-def plot_objective_space(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080), plot_norm=True):
+def plot_objective_space(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080),
+                         plot_norm=True, save_png=False, title=''):
     if len(pop[0].fitness.values) <= 0:
         print('Cannot plot: individuals have no evaluation')
         return
@@ -101,7 +101,7 @@ def plot_objective_space(pop, save=False, file_path=None, label_scale=1, size=(1
                                            marker_symbol='circle-open'))
 
     fig = go.Figure(data=traces)
-    fig.update_layout(title='Objective Space', legend_itemsizing='constant',
+    fig.update_layout(title='Objective Space ' + title, legend_itemsizing='constant',
                       legend=dict(font=dict(size=18 * label_scale)))
     fig.update_xaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
     fig.update_yaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
@@ -109,10 +109,11 @@ def plot_objective_space(pop, save=False, file_path=None, label_scale=1, size=(1
 
     time.sleep(1.5)
     if file_path is not None and save is True:
-        plotly_save(fig, file_path, size)
+        plotly_save(fig, file_path, size, save_png)
 
 
-def plot_norm_objective_space(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080)):
+def plot_norm_objective_space(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080),
+                              save_png=False, title=''):
     if len(pop[0].fitness.values) <= 0:
         print('Cannot plot: individuals have no evaluation')
         return
@@ -148,7 +149,7 @@ def plot_norm_objective_space(pop, save=False, file_path=None, label_scale=1, si
         xaxis_title='f1(x)',
         yaxis_title='f2(x)',
         zaxis_title='f3(x)'))
-    fig.update_layout(title='Objective Space', legend_itemsizing='constant',
+    fig.update_layout(title='Objective Space ' + title, legend_itemsizing='constant',
                       legend=dict(font=dict(size=18 * label_scale)))
     fig.update_xaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
     fig.update_yaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
@@ -156,11 +157,11 @@ def plot_norm_objective_space(pop, save=False, file_path=None, label_scale=1, si
 
     time.sleep(1.5)
     if file_path is not None and save is True:
-        plotly_save(fig, file_path, size)
+        plotly_save(fig, file_path, size, save_png)
 
 
-def plot_pop_obj_space(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080)):
-
+def plot_pop_obj_space(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080), title='',
+                       save_png=False):
     fig = make_subplots(rows=1, cols=1)
     traces = []
     # Population
@@ -178,17 +179,18 @@ def plot_pop_obj_space(pop, save=False, file_path=None, label_scale=1, size=(198
         xaxis_title='f1(x)',
         yaxis_title='f2(x)',
         zaxis_title='f3(x)'))
-    fig.update_layout(title='Objective Space', legend_itemsizing='constant',
-                      legend=dict(font=dict(size=18 * label_scale)))
+    fig.update_layout(title='Optimum Individuals in Objective Space for Problem: ' + title,
+                      legend_itemsizing='constant', legend=dict(font=dict(size=18 * label_scale)))
     fig.update_xaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
     fig.update_yaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
     fig.show()
     time.sleep(1.5)
     if file_path is not None and save is True:
-        plotly_save(fig, file_path, size)
+        plotly_save(fig, file_path, size, save_png)
 
 
-def plot_pop_obj_hist(pop_hist, save=False, file_path=None, label_scale=1, size=(1980, 1080)):
+def plot_pop_obj_hist(pop_hist, save=False, file_path=None, label_scale=1, size=(1980, 1080), title='',
+                      save_png=False):
     fig = make_subplots(rows=1, cols=1)
     traces = []
 
@@ -212,12 +214,13 @@ def plot_pop_obj_hist(pop_hist, save=False, file_path=None, label_scale=1, size=
         xaxis_title='f1(x)',
         yaxis_title='f2(x)',
         zaxis_title='f3(x)'))
-    fig.update_layout(title='Objective Space', legend_itemsizing='constant',
-                      legend=dict(font=dict(size=18 * label_scale)))
+    fig.update_layout(
+        title='Population along Generations in Objective Space for Problem: ' + title,
+        legend_itemsizing='constant', legend=dict(font=dict(size=18 * label_scale)))
     fig.update_xaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
     fig.update_yaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
     fig.show()
 
     time.sleep(1.5)
     if file_path is not None and save is True:
-        plotly_save(fig, file_path, size)
+        plotly_save(fig, file_path, size, save_png)

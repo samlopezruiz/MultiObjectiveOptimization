@@ -12,7 +12,7 @@ from src.utils.plot.plot import plot_hist_hv
 if __name__ == '__main__':
 
     prob_cfg = {'n_obj': 3, 'n_variables': 30, 'bounds_low': 0, 'bounds_up': 1}
-    algo_cfg = {'max_gen': 100, 'pop_size': 100}
+    algo_cfg = {'algorithm': 'NSGA III', 'max_gen': 100, 'pop_size': 100}
 
     problem = get_problem("dtlz2")
     problem.n_var = prob_cfg['n_variables']
@@ -43,10 +43,12 @@ if __name__ == '__main__':
                    verbose=True)
     print('Algorithm finished in {}s'.format(round(time.time() - t0, 4)))
 
-    plot_pop_obj_space(res.F)
+    plot_pop_obj_space(res.F, save=True, file_path=['img', 'opt_pymoo_res'],
+                       title='ZDT2' + '<br>CFG: ' + str(algo_cfg))
     plot_hist_hv(res, lib='pymoo')
 
     pop_hist = [gen.pop.get('F') for gen in res.history]
-    plot_pop_obj_hist(pop_hist)
+    plot_pop_obj_hist(pop_hist, save=True, file_path=['img', 'opt_pymoo_pop_hist'],
+                      title='ZDT2' + '<br>CFG: ' + str(algo_cfg))
 
 

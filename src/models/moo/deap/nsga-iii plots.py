@@ -17,10 +17,11 @@ if __name__ == '__main__':
                               sel_nsga_iii, number_of_variables,
                               bounds_low, bounds_up, creator)
 
-    pop = toolbox.population(n=20)
+    pop = toolbox.population(n=50)
     for ind in pop:
         ind.fitness.values = toolbox.evaluate(ind)
 
-    plot_objective_space(pop, label_scale=1)
-    plot_norm_objective_space(pop, label_scale=1)
-
+    plot_objective_space(pop, label_scale=1, save=True, file_path=['img', 'ini_pop'],
+                         title='for Random Initial Population')
+    plot_norm_objective_space(pop, label_scale=1, save=True, file_path=['img', 'assignment'],
+                              title='showing assignment of Population to Reference Points')

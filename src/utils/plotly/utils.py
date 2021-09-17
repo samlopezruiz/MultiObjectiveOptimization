@@ -49,7 +49,7 @@ def new_dir(file_path):
         os.makedirs(file_path)
 
 
-def plotly_save(fig, file_path, size):
+def plotly_save(fig, file_path, size, save_png=False):
     today = date.today()
 
     print("saving .html and .png")
@@ -59,7 +59,8 @@ def plotly_save(fig, file_path, size):
     if size is None:
         size = (1980, 1080)
 
-    fig.write_image(os.path.join(*image_path), width=size[0], height=size[1], engine='orca')
+    if save_png:
+        fig.write_image(os.path.join(*image_path), width=size[0], height=size[1], engine='orca')
     fig.write_html(os.path.join(*html_path))
 
 
