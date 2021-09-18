@@ -1,11 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<b1>Hellow World</b1>
-<a href="plots/opt_res_deap_zdt2.html"> Plot Deap ZDT2 </a>
-</body>
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>MOO</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<script src="jquery.js"></script> 
+		<script> 
+			$(function(){
+			$("#DivContent").load("plots/problem/zdt2/assignment.html"); 
+			});
+		</script> 
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+								<header id="header">
+									<a href="index.html" class="logo"><strong>Multiple Objective Optimization</strong> by Samuel López Ruiz</a>
+								</header>
+
+							<!-- Banner -->
+								<section id="banner">
+									<div class="content">
+										<div id="DivContent"></div>
+										<header>
+											<h1>MOO</h1>
+											<p>This respository presents Multi-Objective Optimization Algorithms.</p>
+										</header>
+										<p>Click on the right menu to open the results</p>
+									</div>
+									<span class="image object">
+										<img src="img/plot_moo.png" alt="" />
+									</span>
+								</section>
+
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										<!-- <li><a href="index.html">Homepage</a></li>
+										<li><a href="generic.html">Generic</a></li>
+										<li><a href="elements.html">Elements</a></li> -->
+										<li>
+											<span class="opener">ZDT2</span>
+											<ul>
+												<li><a href="plots/problem/zdt2/assignment.html">Initial Population</a></li>
+												<li><a href="plots/problem/zdt2/ini_pop.html">Assignment</a></li>
+												<li><a href="plots/problem/zdt2/">Solution with DEAP</a></li>
+												<li><a href="plots/problem/zdt2/">Pop History with DEAP</a></li>
+												<li><a href="plots/problem/zdt2/">Solution with PYMOO</a></li>
+												<li><a href="plots/problem/zdt2/">Pop History with PYMOO</a></li>
+											</ul>
+										</li>
+									</ul>
+								</nav>
+						</div>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
 </html>
