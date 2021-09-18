@@ -15,7 +15,7 @@ from src.models.moo.deap.survive import MyReferenceDirectionSurvival
 from src.models.moo.deap.utils import get_deap_pop_hist
 from src.optimization.functions.mop import dtlz2
 from src.utils.plot.plot import plot_hist_hv
-
+#test
 if __name__ == '__main__':
     # %%
     custom_problem = False
