@@ -20,11 +20,12 @@ if __name__ == '__main__':
     # %%
     custom_problem = False
     prob_cfg = {'n_obj': 3, 'n_variables': 30, 'bounds_low': 0, 'bounds_up': 1}
-    algo_cfg = {'algorithm': 'NSGA III', 'max_gen': 100, 'pop_size': 100}
+    algo_cfg = {'algorithm': 'NSGA III', 'max_gen': 100, 'pop_size': 150}
     verbose = False
+    save_plots = True
 
     # Use PYMOOS selection function or custom function
-    selec = 'pymoo'
+    selec = 'custom'
     sel_func = get_sel_nsga_iii_pymoo() if selec == 'pymoo' else sel_nsga_iii
 
     # Use DEAP benchmark function or custom function
@@ -56,5 +57,5 @@ if __name__ == '__main__':
 
     # %%
     pop_hist = get_deap_pop_hist(logbook)
-    plot_pop_obj_hist(pop_hist, save=True,
+    plot_pop_obj_hist(pop_hist, save=save_plots,
                       file_path=['img', 'opt_deap_pop_hist'], title='ZDT2' + '<br>CFG: ' + str(algo_cfg))
