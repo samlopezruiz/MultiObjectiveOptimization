@@ -47,12 +47,13 @@ if __name__ == '__main__':
 
     # %% Plot Generation Progress
     pop_hist = get_deap_pop_hist(logbook)
-    plot_gen_progress(pop_hist, step_size=5, save=save_plots,
-                      file_path=['img', 'opt_deap_res'], title='ZDT2 Generation Progress' + '<br>CFG: ' + str(algo_cfg))
+    plot_gen_progress(pop_hist, step_size=5, save=save_plots, file_path=['img', 'ZDT2_gen_hist'],
+                      title='ZDT2 Generation Progress' + '<br>CFG: ' + str(algo_cfg))
 
     # Plot Optimum Solutions
     optimum = get_optimum_pop(res, ref_points)
-    plot_multiple_pop([res, optimum], labels=['population', 'optimum'], save=save_plots,
-                      file_path=['img', 'opt_deap_res'], title='ZDT2 Optimum Solutions' + '<br>CFG: ' + str(algo_cfg))
+    plot_multiple_pop([res, optimum], labels=['population', 'optimum'], save=save_plots, opacities=[0.4, 1],
+                      plot_border=True, file_path=['img', 'ZDT2_optimum'],
+                      title='ZDT2 Optimum Solutions' + '<br>CFG: ' + str(algo_cfg))
 
 

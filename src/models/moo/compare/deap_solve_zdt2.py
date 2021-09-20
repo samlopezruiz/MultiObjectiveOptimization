@@ -5,8 +5,8 @@ import time
 from deap import base, creator, tools, benchmarks
 
 from src.models.moo.deap.harness import prepare_toolbox, nsga_iii
-from src.models.moo.deap.nsgaiii import sel_nsga_iii, ind_to_fitness_array
-from src.models.moo.deap.plot import plot_objective_space, plot_pop_obj_space, plot_pop_obj_hist
+from src.models.moo.deap.nsga3.nsgaiii import sel_nsga_iii, ind_to_fitness_array
+from src.models.moo.utils.plot import plot_pop_obj_space, plot_pop_obj_hist
 from src.optimization.functions.mop import dtlz2
 from src.utils.plot.plot import plot_hist_hv
 

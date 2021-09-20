@@ -6,13 +6,14 @@ from pymoo.factory import get_sampling, get_crossover, get_mutation, get_termina
     get_reference_directions
 from pymoo.optimize import minimize
 
+from src.models.moo.utils.plot import plot_multiple_pop, plot_gen_progress
 from src.utils.plot.plot import plot_hist_hv
 
 if __name__ == '__main__':
 
     prob_cfg = {'n_obj': 3, 'n_variables': 30, 'bounds_low': 0, 'bounds_up': 1}
     algo_cfg = {'algorithm': 'NSGA III', 'max_gen': 100, 'pop_size': 100}
-    save_plot = True
+    save_plots = False
 
     problem = get_problem("dtlz2")
     problem.n_var = prob_cfg['n_variables']
@@ -43,12 +44,17 @@ if __name__ == '__main__':
                    verbose=True)
     print('Algorithm finished in {}s'.format(round(time.time() - t0, 4)))
 
-    plot_pop_obj_space(res.F, save=save_plot, file_path=['img', 'opt_pymoo_res'],
-                       title='ZDT2' + '<br>CFG: ' + str(algo_cfg))
+    # %%
+    # Plotting hypervolume
     plot_hist_hv(res, lib='pymoo')
 
+    # %% Plot Generation Progress
     pop_hist = [gen.pop.get('F') for gen in res.history]
-    plot_pop_obj_hist(pop_hist, save=save_plot, file_path=['img', 'opt_pymoo_pop_hist'],
-                      title='ZDT2' + '<br>CFG: ' + str(algo_cfg))
-
-
+    plot_gen_progress(pop_hist, step_size=5, save=save_plots,
+                      file_path=['img', 'opt_deap_res'],
+                      title='DTLZ2 Generation Progress' + '<br>CFG: ' + str(algo_cfg))
+    #%%
+    # Plot Optimum Solutions
+    plot_multiple_pop([pop_hist[-1], res.opt.get('F')], labels=['population', 'optimum'], save=save_plots,
+                      opacities=[.2, 1], plot_border=True, file_path=['img', 'opt_deap_res'],
+                      title='DTLZ2 Optimum Solutions' + '<br>CFG: ' + str(algo_cfg))
