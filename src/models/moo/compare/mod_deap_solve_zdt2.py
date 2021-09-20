@@ -22,11 +22,11 @@ if __name__ == '__main__':
     prob_cfg = {'n_obj': 3, 'n_variables': 30, 'bounds_low': 0, 'bounds_up': 1}
     algo_cfg = {'algorithm': 'NSGA III', 'max_gen': 100, 'pop_size': 150}
     verbose = False
-    save_plots = True
+    save_plots = False
 
     # Use PYMOOS selection function or custom function
-    selec = 'custom'
-    sel_func = get_sel_nsga_iii_pymoo() if selec == 'pymoo' else sel_nsga_iii
+    use_pymoo_selec = False
+    sel_func = get_sel_nsga_iii_pymoo() if use_pymoo_selec else sel_nsga_iii
 
     # Use DEAP benchmark function or custom function
     problem = dtlz2 if custom_problem else lambda ind: benchmarks.dtlz2(ind, prob_cfg['n_obj'])
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     ref_dirs = get_reference_directions("das-dennis", 3, n_partitions=12)
     survive = MyReferenceDirectionSurvival(ref_dirs)
     _ = survive.do(res, len(res))
-    plot_pop_obj_space(ind_to_fitness_array(survive.opt), save=True,
+    plot_pop_obj_space(ind_to_fitness_array(survive.opt), save=save_plots,
                        file_path=['img', 'opt_deap_res'], title='ZDT2' + '<br>CFG: ' + str(algo_cfg))
 
     # Plotting hypervolume
