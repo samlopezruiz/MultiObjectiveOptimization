@@ -243,14 +243,14 @@ def plot_nitching_selec_deap(pop, k, save=False, file_path=None, label_scale=1, 
                              marker_symbol='cross'))
 
     # Normalized Objectives
-    traces.append(add_3d_scatter_trace(chosen, name='chosen', color_ix=0, markersize=5,
-                                       marker_symbol='circle'))
-    traces.append(add_3d_scatter_trace(selection, name='left', color_ix=3, markersize=5,
-                                       marker_symbol='circle'))
-    traces.append(add_3d_scatter_trace(selected, name='selected', color_ix=1, markersize=5,
-                                       marker_symbol='circle'))
+    traces.append(add_3d_scatter_trace(chosen, name='selected individuals from first k-1 fronts', color_ix=0,
+                                       markersize=5, marker_symbol='circle'))
+    traces.append(add_3d_scatter_trace(selection, name='non-selected individuals from last front (nitching)',
+                                       color_ix=3, markersize=5, marker_symbol='circle'))
+    traces.append(add_3d_scatter_trace(selected, name='selected individuals from last front (nitching)',
+                                       color_ix=1, markersize=5, marker_symbol='circle'))
     # Reference Points
-    traces.append(add_3d_scatter_trace(ref_points, name='reference points', color_ix=5, markersize=3,
+    traces.append(add_3d_scatter_trace(ref_points, name='reference points', color_ix=4, markersize=3,
                                        marker_symbol='circle'))
 
     pair_traces = [add_3d_scatter_trace(pair, name=None, color_ix=7, mode='lines', legend=False) for pair in pairs]

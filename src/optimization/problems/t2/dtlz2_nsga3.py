@@ -3,23 +3,27 @@ import copy
 import time
 from functools import partial
 
+import numpy as np
 from deap import base, creator, tools, benchmarks
+from pymoo.factory import get_performance_indicator
 
 from src.models.moo.deap.harness import prepare_toolbox, nsga_iii
 from src.models.moo.deap.nsga3.nsgaiii_survive import get_optimum_pop, selection_NSGA3
+from src.models.moo.utils.indicators import get_hypervolume
 from src.models.moo.utils.plot import plot_multiple_pop, \
-    plot_gen_progress
-from src.models.moo.deap.utils import get_deap_pop_hist
+    plot_gen_progress, get_fitnesses
+from src.models.moo.deap.utils import get_deap_pop_hist, get_deap_pops_obj
 from src.optimization.functions.mop import dtlz2
 from src.utils.plot.plot import plot_hist_hv
 
 if __name__ == '__main__':
     # %%
-    prob_cfg = {'n_obj': 3, 'n_variables': 30, 'bounds_low': 0, 'bounds_up': 1}
+    problem_name = 'DTLZ2'
+    prob_cfg = {'n_obj': 3, 'n_variables': 12, 'bounds_low': 0, 'bounds_up': 1}
     algo_cfg = {'algorithm': 'NSGA III', 'max_gen': 100, 'pop_size': 100}
     verbose = False
-    save_plots = False
-    custom_problem = False
+    save_plots = True
+    custom_problem = True
 
     # Use DEAP benchmark function or custom function
     problem = dtlz2 if custom_problem else lambda ind: benchmarks.dtlz2(ind, prob_cfg['n_obj'])
@@ -41,19 +45,18 @@ if __name__ == '__main__':
 
     print('Algorithm finished in {}s'.format(round(time.time() - t0, 4)))
 
-    #%%
-    # Plotting hypervolume
+    # %% Plotting hypervolume
     plot_hist_hv(logbook, lib='deap')
+    hypervol = get_hypervolume(res)
+    print('Hyper-Volume in last generation: {}'.format(round(hypervol, 4)))
 
     # %% Plot Generation Progress
     pop_hist = get_deap_pop_hist(logbook)
-    plot_gen_progress(pop_hist, step_size=5, save=save_plots, file_path=['img', 'ZDT2_gen_hist'],
-                      title='ZDT2 Generation Progress' + '<br>CFG: ' + str(algo_cfg))
+    plot_gen_progress(pop_hist, step_size=5, save=save_plots, file_path=['img', problem_name+'_gen_hist'],
+                      title=problem_name+' Generation Progress' + '<br>CFG: ' + str(algo_cfg))
 
     # Plot Optimum Solutions
     optimum = get_optimum_pop(res, ref_points)
     plot_multiple_pop([res, optimum], labels=['population', 'optimum'], save=save_plots, opacities=[0.4, 1],
-                      plot_border=True, file_path=['img', 'ZDT2_optimum'],
-                      title='ZDT2 Optimum Solutions' + '<br>CFG: ' + str(algo_cfg))
-
-
+                      plot_border=True, file_path=['img', problem_name+'_optimum'],
+                      title=problem_name+' Optimum Solutions' + '<br>CFG: ' + str(algo_cfg))
