@@ -93,7 +93,7 @@ def add_3d_surface_trace(xrange, yrange, z, opacity=0.1):
 
 
 def plot_pop(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080),
-             plot_norm=True, save_png=False, title='', opacity=1):
+             plot_norm=False, save_png=False, title='', opacity=1):
 
     fitnesses = get_fitnesses(pop) if not isinstance(pop, np.ndarray) else pop
     best_point, worst_point, extreme_points, intercepts = calc_geo_points(fitnesses)
@@ -129,6 +129,10 @@ def plot_pop(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080),
                                            marker_symbol='circle'))
 
     fig = go.Figure(data=traces)
+    fig.update_layout(scene=dict(
+        xaxis_title='f1(x)',
+        yaxis_title='f2(x)',
+        zaxis_title='f3(x)'))
     fig.update_layout(title=title, legend_itemsizing='constant',
                       legend=dict(font=dict(size=18 * label_scale)))
     fig.update_xaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))
@@ -174,6 +178,10 @@ def plot_multiple_pop(pops, labels=None, legend_label='population', save=False, 
                              marker_symbol='cross'))
 
     fig = go.Figure(data=traces)
+    fig.update_layout(scene=dict(
+        xaxis_title='f1(x)',
+        yaxis_title='f2(x)',
+        zaxis_title='f3(x)'))
     fig.update_layout(title=title, legend_itemsizing='constant',
                       legend=dict(font=dict(size=18 * label_scale)))
     fig.update_xaxes(tickfont=dict(size=14 * label_scale), title_font=dict(size=18 * label_scale))

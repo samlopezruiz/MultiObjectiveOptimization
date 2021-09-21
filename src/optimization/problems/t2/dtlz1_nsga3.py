@@ -3,17 +3,13 @@ import copy
 import time
 from functools import partial
 
-import numpy as np
 from deap import base, creator, tools, benchmarks
-from pymoo.factory import get_performance_indicator
 
-from src.models.moo.deap.harness import prepare_toolbox, nsga_iii
+from src.models.moo.deap.harness import prepare_toolbox, run_algorithm
 from src.models.moo.deap.nsga3.nsgaiii_survive import get_optimum_pop, selection_NSGA3
 from src.models.moo.utils.indicators import get_hypervolume
-from src.models.moo.utils.plot import plot_multiple_pop, \
-    plot_gen_progress, get_fitnesses
-from src.models.moo.deap.utils import get_deap_pop_hist, get_deap_pops_obj
-from src.optimization.functions.mop import dtlz2, dtlz1
+from src.models.moo.utils.plot import plot_multiple_pop
+from src.optimization.functions.mop import dtlz1
 from src.utils.plot.plot import plot_hist_hv
 
 if __name__ == '__main__':
@@ -41,7 +37,7 @@ if __name__ == '__main__':
     stats = tools.Statistics()
     stats.register('pop', copy.deepcopy)
     t0 = time.time()
-    res, logbook = nsga_iii(toolbox, stats=stats, verbose=verbose)
+    res, logbook = run_algorithm(toolbox, stats=stats, verbose=verbose)
 
     print('Algorithm finished in {}s'.format(round(time.time() - t0, 4)))
 

@@ -3,6 +3,7 @@ from deap import tools
 from deap.tools._hypervolume import hv
 from pymoo.factory import get_performance_indicator
 
+from src.models.moo.deap.utils import get_deap_pops_obj, get_pymoo_pops_obj
 from src.models.moo.utils.plot import get_fitnesses
 
 
@@ -19,3 +20,9 @@ def get_hypervolume(pop):
     hv = get_performance_indicator("hv", ref_point=ref)
     hypervol = hv.calc(F)
     return hypervol
+
+def get_hvs_from_log(hist, lib='deap'):
+    pops_obj, ref = get_deap_pops_obj(hist) if lib == 'deap' else get_pymoo_pops_obj(hist)
+    hv = get_performance_indicator("hv", ref_point=ref)
+    hypervols = [hv.calc(pop_obj) for pop_obj in pops_obj]
+    return hypervols

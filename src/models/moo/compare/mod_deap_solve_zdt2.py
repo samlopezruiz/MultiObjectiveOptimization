@@ -5,7 +5,7 @@ from functools import partial
 
 from deap import base, creator, tools, benchmarks
 
-from src.models.moo.deap.harness import prepare_toolbox, nsga_iii
+from src.models.moo.deap.harness import prepare_toolbox, run_algorithm
 from src.models.moo.deap.nsga3.nsgaiii_survive import get_optimum_pop, selection_NSGA3
 from src.models.moo.utils.plot import plot_multiple_pop, \
     plot_gen_progress
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     stats = tools.Statistics()
     stats.register('pop', copy.deepcopy)
     t0 = time.time()
-    res, logbook = nsga_iii(toolbox, stats=stats, verbose=verbose)
+    res, logbook = run_algorithm(toolbox, stats=stats, verbose=verbose)
 
     print('Algorithm finished in {}s'.format(round(time.time() - t0, 4)))
 
