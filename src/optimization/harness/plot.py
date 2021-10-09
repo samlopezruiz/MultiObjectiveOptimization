@@ -5,94 +5,68 @@ from matplotlib import pyplot as plt
 import os
 from datetime import datetime
 
+from src.utils.util import create_dir, get_new_file_path
 
-def plot_runs(logs, var='best', title='', save=False, save_folder='images'):
-    fig, ax = plt.subplots(figsize=(15, 9))
-    max_n_gens = 0
-    all_runs = []
-    for log in logs:
-        run = log[2]
-        max_n_gens = max(max_n_gens, run.shape[0])
-        sns.lineplot(x=run.index, y=var, data=run, ax=ax, color='gray', alpha=0.5)
-        sns.scatterplot(x=run.index, y=var, data=run, ax=ax, color='black', alpha=0.3)
-        all_runs.append(run[var])
 
-    padded_runs = []
-    for run in all_runs:
-        padded_runs.append(np.pad(run, (0, max_n_gens - len(run)), 'edge'))
-    runs = np.array(padded_runs)
-    mean_run = np.mean(runs, axis=0)
-    sns.lineplot(x=list(range(max_n_gens)), y=mean_run, ax=ax, color='red')
-    plt.xlim([0, max_n_gens])
-    ax.set_title('{}: F(x) vs. Generations @ {} runs'.format(title, len(logs)))
+def plot_runs(y_runs,
+              mean_run=None,
+              x_label=None,
+              y_label=None,
+              title=None,
+              size=(15, 9),
+              file_path=None,
+              save=False,
+              legend_labels=None,
+              show_grid=True,
+              use_date=False):
+    x = np.arange(y_runs.shape[1]).astype(int) + 1
+
+    fig, ax = plt.subplots(figsize=size)
+    for y in y_runs:
+        sns.lineplot(x=x, y=y, ax=ax, color='gray' if mean_run is not None else None, alpha=0.8, linewidth=4)
+        # sns.scatterplot(x=x, y=y, ax=ax, color='black', alpha=0.3)
+    if mean_run is not None:
+        sns.lineplot(x=x, y=mean_run, ax=ax, color='blue', linewidth=6)
+
+    plt.xlim([0, y_runs.shape[1]])
+    ax.set(xlabel='x' if x_label is None else x_label,
+           ylabel='x' if y_label is None else y_label)
+    ax.set_title('' if title is None else title)
+
+    if legend_labels is not None:
+        plt.legend(labels=legend_labels)
+    if show_grid:
+        plt.grid()
     plt.show()
-
-    if not os.path.exists(save_folder):
-        os.makedirs(save_folder)
 
     if save:
-        fig.savefig(os.path.join(save_folder, title + '_' + datetime.now().strftime("%d_%m_%Y %H-%M") + '.png'))
+        save_fig(fig, file_path, use_date)
 
 
-def plot_runs(logs, var='best', title='', save=False, save_folder='images'):
-    fig, ax = plt.subplots(figsize=(15, 9))
-    max_n_gens = 0
-    all_runs = []
-    for log in logs:
-        run = log['log']
-        max_n_gens = max(max_n_gens, run.shape[0])
-        sns.lineplot(x=run.index, y=var, data=run, ax=ax, color='gray', alpha=0.5)
-        sns.scatterplot(x=run.index, y=var, data=run, ax=ax, color='black', alpha=0.3)
-        all_runs.append(run[var])
-
-    padded_runs = []
-    for run in all_runs:
-        padded_runs.append(np.pad(run, (0, max_n_gens - len(run)), 'edge'))
-    runs = np.array(padded_runs)
-    mean_run = np.mean(runs, axis=0)
-    sns.lineplot(x=list(range(max_n_gens)), y=mean_run, ax=ax, color='blue')
-    plt.xlim([0, max_n_gens])
-    ax.set_title('{}: F(x) vs. Generations @ {} runs'.format(title, len(logs)))
+def plot_histogram(Y,
+                   x_labels,
+                   x_label=None,
+                   y_label=None,
+                   title=None,
+                   size=(15, 9),
+                   file_path=None,
+                   save=False,
+                   show_grid=True,
+                   use_date=False):
+    Y = pd.DataFrame(Y.T, columns=x_labels)
+    df = Y.melt()
+    df.columns = ['variable' if x_label is None else x_label,
+                  'value' if y_label is None else y_label]
+    fig, ax = plt.subplots(figsize=size)
+    if show_grid:
+        plt.grid()
+    # for i, y in enumerate(Y):
+    sns.barplot(data=df, x=x_label, y=y_label, capsize=.2)
+    ax.set_title('' if title is None else title)
     plt.show()
-
-    if not os.path.exists(save_folder):
-        os.makedirs(save_folder)
 
     if save:
-        fig.savefig(os.path.join(save_folder, title + '_' + datetime.now().strftime("%d_%m_%Y %H-%M") + '.png'))
-
-
-def plot_gp_runs(res, title, metric='min'):
-    fig, ax1 = plt.subplots(figsize=(15, 9))
-    ax2 = ax1.twinx()
-    fits, sizes = [], []
-    for run in res:
-        log = run[2]
-        gen = log.select("gen")
-        fit_mins = log.chapters["fitness"].select(metric)
-        size_avgs = log.chapters["size"].select("avg")
-        sns.lineplot(x=gen, y=fit_mins, ax=ax1, color='blue', alpha=0.3)
-        sns.lineplot(x=gen, y=size_avgs, ax=ax2, color='red', alpha=0.3)
-        fits.append(fit_mins)
-        sizes.append(size_avgs)
-
-    ax1.set_xlabel("Generation")
-    ax1.set_ylabel("Best Individual Fitness", color="b")
-    for tl in ax1.get_yticklabels():
-        tl.set_color("b")
-    ax2.set_ylabel("Average Individual Size", color="r")
-    for tl in ax2.get_yticklabels():
-        tl.set_color("r")
-
-    mean_fits = np.mean(np.array(fits), axis=0)
-    mean_sizes = np.mean(np.array(sizes), axis=0)
-    sns.lineplot(x=gen, y=mean_fits, ax=ax1, color='blue', linewidth=4)
-    sns.lineplot(x=gen, y=mean_sizes, ax=ax2, color='red', linewidth=4)
-    ax1.grid(False)
-    ax2.grid(False)
-    ax1.set_title('{}: F(x) vs. Generations @ {} runs'.format(title, len(res)))
-
-    plt.show()
+        save_fig(fig, file_path, use_date)
 
 
 def plot_gs_stats(stats, gs_cfg=None, title=None, rmargin=0.8, figsize=(20, 9), save=False, save_folder='images'):
@@ -134,3 +108,10 @@ def plot_gs_gp_stats(stats, gs_cfg=None, title=None, rmargin=0.7, figsize=(15, 9
 
     if save:
         fig.savefig(os.path.join(save_folder, title + '_' + datetime.now().strftime("%d_%m_%Y %H-%M") + '.png'))
+
+
+def save_fig(fig, file_path, use_date):
+    file_path = ['img', 'plot'] if file_path is None else file_path
+    create_dir(file_path)
+    file_path = get_new_file_path(file_path, '.png', use_date)
+    fig.savefig(os.path.join(*file_path))

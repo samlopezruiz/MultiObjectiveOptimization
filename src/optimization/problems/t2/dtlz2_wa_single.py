@@ -1,7 +1,7 @@
 import numpy as np
 
-from src.models.moo.deap.weight_avg.harness import run_wa
-from src.optimization.functions.mop import dtlz1, dtlz2
+from src.models.moo.utils.deap.weight_avg.harness import run_wa
+from src.optimization.functions.mop import dtlz2
 
 if __name__ == '__main__':
     # %%

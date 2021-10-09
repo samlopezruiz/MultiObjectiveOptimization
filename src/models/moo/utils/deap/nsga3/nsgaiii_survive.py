@@ -12,7 +12,7 @@ def selection_NSGA3(individuals, k, ref_points):
     fitnesses = np.array([ind.fitness.wvalues for f in pareto_fronts for ind in f])
     fitnesses *= -1
 
-    # Get best and worst point of population, contrary to pymoo
+    # Get best and worst point of population, contrary to py_moo
     best_point = np.min(fitnesses, axis=0)
     worst_point = np.max(fitnesses, axis=0)
 

@@ -1,8 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
-from src.models.moo.deap.harness import run_nsga3
-from src.optimization.functions.mop import dtlz1, dtlz2
+from src.models.moo.utils.deap.harness import run_nsga3
+from src.optimization.functions.mop import dtlz2
 from src.optimization.harness.repeat import repeat
 
 if __name__ == '__main__':

@@ -113,5 +113,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 /src/models/moo/compare/img/
-/src/models/moo/deap/nsga3/img/
-/src/models/moo/deap/examples/
+/src/models/moo/utils/deap/nsga3/img/
+/src/models/moo/utils/deap/examples/
+/src/optimization/problems/t3/output/

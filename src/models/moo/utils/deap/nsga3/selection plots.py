@@ -5,8 +5,8 @@ from deap import base, benchmarks, creator, tools
 from deap.algorithms import varOr
 from deap.tools import sortLogNondominated
 
-from src.models.moo.deap.harness import prepare_toolbox
-from src.models.moo.deap.nsga3.nsgaiii_survive import selection_NSGA3
+from src.models.moo.utils.deap.harness import prepare_toolbox
+from src.models.moo.utils.deap.nsga3.nsgaiii_survive import selection_NSGA3
 from src.models.moo.utils.plot import plot_nitching_selec_deap, plot_multiple_pop, plot_pop, get_fitnesses
 
 if __name__ == '__main__':

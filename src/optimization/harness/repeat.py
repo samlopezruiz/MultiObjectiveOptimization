@@ -16,11 +16,24 @@ def consolidate_results(results):
 
 def repeat(run_func, args, n_repeat, parallel=True):
     if parallel:
-        executor = Parallel(n_jobs=cpu_count(), backend='multiprocessing')
+        executor = Parallel(n_jobs=cpu_count())
         tasks = (delayed(run_func)(*args) for _ in tqdm(range(n_repeat)))
         result = executor(tasks)
     else:
         result = [run_func(*args) for _ in tqdm(range(n_repeat))]
+    return result
+
+
+def repeat_different_args(run_func, args, parallel=True):
+    if not isinstance(args, list):
+        raise Exception('args have to be a list')
+
+    if parallel:
+        executor = Parallel(n_jobs=cpu_count())
+        tasks = (delayed(run_func)(*arg) for arg in tqdm(args))
+        result = executor(tasks)
+    else:
+        result = [run_func(*arg) for arg in tqdm(args)]
     return result
 
 

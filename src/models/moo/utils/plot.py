@@ -8,7 +8,7 @@ from deap.tools import sortLogNondominated
 from plotly import graph_objects as go
 from plotly.subplots import make_subplots
 
-from src.models.moo.deap.nsga3.nsgaiii_survive import find_extreme_points, find_intercepts, associate_to_niche, niching
+from src.models.moo.utils.deap.nsga3.nsgaiii_survive import find_extreme_points, find_intercepts, associate_to_niche, niching
 from src.utils.plotly.utils import plotly_save
 
 pio.renderers.default = "browser"
@@ -213,7 +213,7 @@ def plot_nitching_selec_deap(pop, k, save=False, file_path=None, label_scale=1, 
     fitnesses = np.array([ind.fitness.wvalues for f in pareto_fronts for ind in f])
     fitnesses *= -1
 
-    # Get best and worst point of population, contrary to pymoo
+    # Get best and worst point of population, contrary to py_moo
     best_point = np.min(fitnesses, axis=0)
     worst_point = np.max(fitnesses, axis=0)
 

@@ -3,6 +3,8 @@ import plotly.io as pio
 from plotly import graph_objects as go
 from plotly.subplots import make_subplots
 
+from src.models.moo.utils.plot import plot_multiple_pop
+from src.utils.plot.plot import plot_hist_hv
 from src.utils.plotly.utils import plotly_params_check, plotly_save
 
 pio.renderers.default = "browser"
@@ -90,3 +92,14 @@ def plotly_time_series(df, title=None, save=False, legend=True, file_path=None, 
 
     if file_path is not None and save is True:
         plotly_save(fig, file_path, size)
+
+
+def plot_results_moo(res, file_path=None, title=None, save_plots=False):
+    # Plotting hypervolume
+    plot_hist_hv(res, save=save_plots)
+
+    # Plot Optimum Solutions
+    pop_hist = [gen.pop.get('F') for gen in res.history]
+    plot_multiple_pop([pop_hist[-1], res.opt.get('F')], labels=['population', 'optimum'], save=save_plots,
+                      opacities=[.2, 1], plot_border=True, file_path=file_path,
+                      title=title)

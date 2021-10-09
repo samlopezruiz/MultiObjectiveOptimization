@@ -1,10 +1,11 @@
+import pymoo
 from matplotlib import pyplot as plt
 from pymoo.factory import get_performance_indicator
 
-from src.models.moo.deap.utils import get_deap_pops_obj, get_pymoo_pops_obj
+from src.models.moo.utils.deap.utils import get_pymoo_pops_obj, get_deap_pops_obj
 
 
-def plot_hv(hypervols, title=''):
+def plot_hv(hypervols, title='', save=False):
     plt.plot(hypervols)
     plt.xlabel('Iterations (t)')
     plt.ylabel('Hypervolume')
@@ -12,12 +13,15 @@ def plot_hv(hypervols, title=''):
     plt.show()
 
 
-def plot_hist_hv(hist, lib='deap'):
-    pops_obj, ref = get_deap_pops_obj(hist) if lib == 'deap' else get_pymoo_pops_obj(hist)
-    # hypervols = [hypervolume(pop, ref) for pop in pops]
+def plot_hist_hv(hist, save=False):
+    if isinstance(hist, pymoo.core.result.Result):
+        pops_obj, ref = get_pymoo_pops_obj(hist)
+    else:
+        pops_obj, ref = get_deap_pops_obj(hist)
+
     hv = get_performance_indicator("hv", ref_point=ref)
-    hypervols = [hv.calc(pop_obj) for pop_obj in pops_obj]
-    plot_hv(hypervols, title=lib)
+    hypervols = [hv.do(pop_obj) for pop_obj in pops_obj]
+    plot_hv(hypervols, title='Hypervolume History', save=save)
     return hypervols
 
 

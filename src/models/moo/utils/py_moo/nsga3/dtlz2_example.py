@@ -1,7 +1,8 @@
 import time
 
 import numpy as np
-from pymoo.algorithms.nsga3 import NSGA3
+from pymoo.algorithms.moo.nsga3 import NSGA3
+
 from pymoo.factory import get_sampling, get_crossover, get_mutation, get_termination, get_problem, \
     get_reference_directions
 from pymoo.optimize import minimize
@@ -46,7 +47,7 @@ if __name__ == '__main__':
 
     # %%
     # Plotting hypervolume
-    plot_hist_hv(res, lib='pymoo')
+    plot_hist_hv(res, lib='py_moo')
 
     # %% Plot Generation Progress
     pop_hist = [gen.pop.get('F') for gen in res.history]

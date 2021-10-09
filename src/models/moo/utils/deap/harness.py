@@ -8,9 +8,9 @@ import numpy as np
 from deap import base, algorithms, tools, creator
 from pymoo.factory import get_performance_indicator
 
-from src.models.moo.deap.nsga3.nsgaiii_survive import selection_NSGA3, get_optimum_pop
-from src.models.moo.deap.utils import get_deap_pop_hist
-from src.models.moo.utils.indicators import get_hypervolume, get_hvs_from_log
+from src.models.moo.utils.deap.nsga3.nsgaiii_survive import selection_NSGA3, get_optimum_pop
+from src.models.moo.utils.deap.utils import get_deap_pop_hist
+from src.models.moo.utils.indicators import get_hvs_from_log
 from src.models.moo.utils.plot import plot_gen_progress, plot_multiple_pop, get_fitnesses
 from src.utils.plot.plot import plot_hist_hv
 

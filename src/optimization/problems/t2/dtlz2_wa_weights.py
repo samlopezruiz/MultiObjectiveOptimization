@@ -2,9 +2,9 @@ import numpy as np
 from scipy.stats import pearsonr
 from sklearn.preprocessing import normalize
 
-from src.models.moo.deap.weight_avg.harness import run_wa
+from src.models.moo.utils.deap.weight_avg.harness import run_wa
 from src.models.moo.utils.plot import plot_pop
-from src.optimization.functions.mop import dtlz1, dtlz2
+from src.optimization.functions.mop import dtlz2
 
 if __name__ == '__main__':
     # %%

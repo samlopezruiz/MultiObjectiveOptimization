@@ -3,9 +3,9 @@ import array
 from deap import base, benchmarks, creator, tools
 from deap.algorithms import varOr
 
-from src.models.moo.deap.harness import prepare_toolbox
-from src.models.moo.deap.nsga3.nsgaiii import get_sel_nsga_iii_pymoo, get_sel_nsga_iii_deap
-from src.models.moo.deap.nsga3.nsgaiii_survive import selection_NSGA3
+from src.models.moo.utils.deap.harness import prepare_toolbox
+from src.models.moo.utils.deap import get_sel_nsga_iii_pymoo, get_sel_nsga_iii_deap
+from src.models.moo.utils.deap.nsga3.nsgaiii_survive import selection_NSGA3
 from src.models.moo.utils.plot import plot_multiple_pop
 
 if __name__ == '__main__':

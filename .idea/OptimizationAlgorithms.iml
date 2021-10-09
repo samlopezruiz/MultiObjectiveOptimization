@@ -3,6 +3,10 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/src/models/moo/utils/deap/nsga3/img" />
+      <excludeFolder url="file://$MODULE_DIR$/src/optimization/problems/t3/img" />
+      <excludeFolder url="file://$MODULE_DIR$/src/optimization/problems/t3/results" />
+      <excludeFolder url="file://$MODULE_DIR$/src/optimization/problems/t3/output" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.8 (machine_learning)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -7,11 +7,9 @@ import numpy as np
 from deap import base, creator, tools
 from pymoo.factory import get_performance_indicator
 
-from src.models.moo.deap.harness import prepare_toolbox, run_algorithm
-from src.models.moo.deap.weight_avg.util import weighted_avg
-from src.models.moo.utils.indicators import get_hypervolume
+from src.models.moo.utils.deap.harness import prepare_toolbox, run_algorithm
+from src.models.moo.utils.deap.weight_avg.util import weighted_avg
 from src.models.moo.utils.plot import plot_gen_progress, plot_pop
-from src.optimization.functions.mop import dtlz2, dtlz1
 from src.utils.plot.plot import plot_hv
 
 

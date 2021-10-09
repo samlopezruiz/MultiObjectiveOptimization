@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.models.moo.deap.weight_avg.harness import run_wa
+from src.models.moo.utils.deap.weight_avg.harness import run_wa
 from src.optimization.functions.mop import dtlz1
 from src.optimization.harness.repeat import repeat
 import seaborn as sns

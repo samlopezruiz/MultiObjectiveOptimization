@@ -5,8 +5,8 @@ from functools import partial
 
 from deap import base, creator, tools, benchmarks
 
-from src.models.moo.deap.harness import prepare_toolbox, run_algorithm
-from src.models.moo.deap.nsga3.nsgaiii_survive import get_optimum_pop, selection_NSGA3
+from src.models.moo.utils.deap.harness import prepare_toolbox, run_algorithm
+from src.models.moo.utils.deap.nsga3.nsgaiii_survive import get_optimum_pop, selection_NSGA3
 from src.models.moo.utils.indicators import get_hypervolume
 from src.models.moo.utils.plot import plot_multiple_pop
 from src.optimization.functions.mop import dtlz1
