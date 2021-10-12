@@ -26,6 +26,7 @@ gray_colors = [
     'lightgray', 'gray', 'darkgray', 'lightslategray',
 ]
 
+
 def plotly_time_series(df, title=None, save=False, legend=True, file_path=None, size=(1980, 1080), color_col=None,
                        markers='lines+markers', xaxis_title="time", markersize=5, plot_title=True, label_scale=1,
                        adjust_height=(False, 0.6), plot_ytitles=False, **kwargs):
@@ -94,12 +95,20 @@ def plotly_time_series(df, title=None, save=False, legend=True, file_path=None, 
         plotly_save(fig, file_path, size)
 
 
-def plot_results_moo(res, file_path=None, title=None, save_plots=False):
+def plot_results_moo(res, file_path=None, title=None, save_plots=False, use_date=False):
     # Plotting hypervolume
     plot_hist_hv(res, save=save_plots)
 
     # Plot Optimum Solutions
     pop_hist = [gen.pop.get('F') for gen in res.history]
-    plot_multiple_pop([pop_hist[-1], res.opt.get('F')], labels=['population', 'optimum'], save=save_plots,
-                      opacities=[.2, 1], plot_border=True, file_path=file_path,
-                      title=title)
+    if res.opt.get('F').shape[1] == 3:
+        plot_multiple_pop([pop_hist[-1], res.opt.get('F')],
+                          labels=['population', 'optimum'],
+                          save=save_plots,
+                          opacities=[.2, 1],
+                          plot_border=True,
+                          file_path=file_path,
+                          title=title,
+                          use_date=use_date)
+    else:
+        print('Objective space cannot be plotted. Shape={}'.format(res.opt.get('F').shape[1]))

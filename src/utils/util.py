@@ -1,6 +1,7 @@
 import copy
 from datetime import datetime
 import os
+from os.path import isfile
 
 import joblib
 import numpy as np
@@ -52,22 +53,65 @@ def save_vars(vars, file_path=['results', 'res'], use_date=False):
 
 def get_new_file_path(file_path, extension, use_date):
     ex = len(extension)
+    new_file_path = copy.copy(file_path)
     if use_date:
-        file_path[-1] = file_path[-1] + '_' + datetime.now().strftime("%d_%m_%Y %H-%M") + extension
+        new_file_path[-1] = new_file_path[-1] + '_' + datetime.now().strftime("%d_%m_%Y %H-%M") + extension
     else:
-        file_path[-1] = file_path[-1] + extension
-        if os.path.exists(os.path.join(*file_path)):
-            test_file_path = copy.copy(file_path)
+        new_file_path[-1] = new_file_path[-1] + extension
+        if os.path.exists(os.path.join(*new_file_path)):
             counter = 1
-            test_file_path[-1] = '{}_1{}'.format(test_file_path[-1][:-ex], extension)
+            new_file_path[-1] = '{}_1{}'.format(new_file_path[-1][:-ex], extension)
             while True:
-                test_file_path[-1] = '{}{}{}'.format(test_file_path[-1][:-(ex + 1)],
-                                                     str(counter),
-                                                     extension)
-                if not os.path.exists(os.path.join(*test_file_path)):
-                    return test_file_path
+                new_file_path[-1] = '{}{}{}'.format(new_file_path[-1][:-(ex + 1)],
+                                                    str(counter),
+                                                    extension)
+                if not os.path.exists(os.path.join(*new_file_path)):
+                    return new_file_path
                 else:
                     counter += 1
         else:
-            return file_path
-    return file_path
+            return new_file_path
+    return new_file_path
+
+
+def reshape_01axis(arr_in):
+    s = arr_in.shape
+    arr_out = np.zeros((s[1], s[0], s[2]))
+    for p in range(s[0]):
+        for a in range(s[1]):
+            arr_out[a, p, :] = arr_in[p, a, :]
+
+    return arr_out
+
+
+def files_with_substring(file_path, substring):
+    path = os.path.join(*file_path)
+    files = [f for f in os.listdir(path) if (isfile(os.path.join(path, f)) and substring in f)]
+    return files
+
+
+def unpack_results(file_path):
+    print('Loading file: {}'.format(file_path[-1]))
+    result = joblib.load(os.path.join(*file_path))
+    if isinstance(result, dict):
+        return result
+    else:
+        algos, problem, k, prob_cfg, prob_cfg, algos_hv_hist_runs = result
+        return {'algos': algos, 'problem': problem, 'k': k,
+                'prob_cfg': prob_cfg, 'algos_hv_hist_runs': algos_hv_hist_runs}
+
+
+def latex_table(title, tabbular_text):
+    table_str = '\\begin{table} \n\\begin{center}\n'
+    table_str += '\\caption{{{0}}}\\label{{tbl:{1}}}\n'.format(title.upper().replace('_', ' '),
+                                                               title.lower().replace(' ', '_'))
+    table_str += tabbular_text
+    table_str += '\\end{center} \n\\end{table}\n'
+    return table_str
+
+
+def write_text_file(file_path, text, extension='.txt', use_date=False):
+    create_dir(file_path)
+    path = get_new_file_path(file_path, extension, use_date=use_date)
+    with open(os.path.join(*path), "w") as text_file:
+        text_file.write(text)

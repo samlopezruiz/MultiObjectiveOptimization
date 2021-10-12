@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 from deap.tools._hypervolume import hv
 from pymoo.factory import get_performance_indicator
@@ -18,8 +20,9 @@ def hypervolume(individuals, ref=None):
 def get_hypervolume(pop, ref=None):
     F = pop if isinstance(pop, np.ndarray) else get_fitnesses(pop)
     ref = np.max(F, axis=0) if ref is None else np.array(ref)
-    hv = get_performance_indicator("hv", ref_point=ref)
-    hypervol = hv.do(F)
+    hypervol = hv.hypervolume(F, ref)
+    # hv = get_performance_indicator("hv", ref_point=ref)
+    # hypervol = hv.do(F)
     return hypervol
 
 

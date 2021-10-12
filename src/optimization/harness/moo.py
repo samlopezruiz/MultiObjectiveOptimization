@@ -43,7 +43,7 @@ def run_moo(problem, algorithm, algo_cfg, verbose=1, seed=None):
 
 def create_title(prob_cfg, algo_cfg, algorithm):
     return prob_cfg['name'] + ' Optimum Solutions' + '<br>' + \
-           get_type_str(algorithm) + 'CFG: ' + str(algo_cfg)
+           get_type_str(algorithm) + ' CFG: ' + str(algo_cfg)
 
 
 def get_algorithm(name, algo_cfg, n_obj=3):
@@ -103,7 +103,8 @@ def run_moo_problem(name,
                     file_path=['img', 'opt_res'],
                     save_plots=False,
                     verbose=1,
-                    seed=None):
+                    seed=None,
+                    use_date=False):
     problem = get_problem(prob_cfg['name'],
                           n_var=prob_cfg['n_variables'],
                           n_obj=prob_cfg['n_obj']) if problem is None else problem
@@ -117,31 +118,32 @@ def run_moo_problem(name,
         plot_results_moo(result['res'],
                          file_path=file_path,
                          title=create_title(prob_cfg, algo_cfg, algorithm),
-                         save_plots=save_plots)
+                         save_plots=save_plots,
+                         use_date=use_date)
 
     hv_pop = get_hypervolume(result['pop_hist'][-1], prob_cfg['hv_ref'])
-    hv_opt = get_hypervolume(result['res'].opt.get('F'), prob_cfg['hv_ref'])
+    hv_opt = None #get_hypervolume(result['res'].opt.get('F'), prob_cfg['hv_ref'])
 
     problem_result = {'result': result, 'hv_pop': hv_pop, 'hv_opt': hv_opt}
     return problem_result
 
 
-def repeat_moo(params, n_repeat, is_reproductible=False):
+def repeat_moo(params, n_repeat, is_reproductible=False, parallel=True):
     if is_reproductible:
         args = []
         for i in range(n_repeat):
             # Specify seed for each run for reproducibility
             params['seed'] = i
             args.append(get_moo_args(params))
-        runs = repeat_different_args(run_moo_problem, args)
+        runs = repeat_different_args(run_moo_problem, args, parallel=parallel)
     else:
-        runs = repeat(run_moo_problem, get_moo_args(params), n_repeat=n_repeat)
+        runs = repeat(run_moo_problem, get_moo_args(params), n_repeat=n_repeat, parallel=parallel)
     return runs
 
 
-def run_multiple_problems(probs, algos, general_cfg, params, algo_cfg, prob_cfg, folder_cfg):
+def run_multiple_problems(probs, algos, general_cfg, params, algo_cfg, prob_cfg, folder_cfg, parallel=True):
     for problem, k in probs:
-        print('\nRunning Optimization for problem: {}'.format(problem))
+        print('\nRunning Optimization for problem: {} k={}'.format(problem, k))
         prob_cfg['name'], prob_cfg['n_obj'] = problem, k
         prob_cfg['hv_ref'] = [5] * prob_cfg['n_obj']
         algo_cfg['hv_ref'] = [10] * prob_cfg['n_obj']
@@ -150,16 +152,20 @@ def run_multiple_problems(probs, algos, general_cfg, params, algo_cfg, prob_cfg,
         for algo in algos:
             t0 = time.time()
             params['name'] = algo
-            runs = repeat_moo(params, general_cfg['n_repeat'], general_cfg['is_reproductible'])
+            runs = repeat_moo(params, general_cfg['n_repeat'], general_cfg['is_reproductible'], parallel=parallel)
             algos_runs.append(runs)
             algos_hv_hist_runs.append(hv_hist_from_runs(runs, ref=prob_cfg['hv_ref']))
             print('\t{} with {} finished in {}s'.format(problem, algo, round(time.time() - t0, 2)))
 
         if general_cfg['save_stats']:
-            save_vars([algo, problem, k, prob_cfg, prob_cfg, algos_hv_hist_runs],
+            pops = [algo_runs['result']['res'].pop for algo_runs in algos_runs]
+            sv = {'algos': algos, 'problem': problem, 'k': k, 'prob_cfg': prob_cfg, 'pops': pops,
+                  'algo_cfg': algo_cfg, 'algos_hv_hist_runs': algos_hv_hist_runs}
+            save_vars(sv,
                       file_path=['output',
                                  folder_cfg['experiment'],
-                                 folder_cfg['results'], '{}_k{}_res'.format(problem, k)],
+                                 folder_cfg['results'],
+                                 '{}_k{}_res'.format(problem, k)],
                       use_date=general_cfg['use_date'])
 
         if general_cfg['plot_ind_algorithms']:
@@ -167,15 +173,16 @@ def run_multiple_problems(probs, algos, general_cfg, params, algo_cfg, prob_cfg,
                 plot_runs(hv_hist_runs, np.mean(hv_hist_runs, axis=0),
                           x_label='Generations',
                           y_label='Hypervolume',
-                          title='{} convergence plot with {}. Ref={}'.format(problem,
-                                                                             algos[i],
-                                                                             str(prob_cfg['hv_ref'])),
+                          title='{} k={} convergence plot with {}. Ref={}'.format(problem, k,
+                                                                                  algos[i],
+                                                                                  str(prob_cfg['hv_ref'])),
                           size=(15, 9),
                           file_path=['output',
                                      folder_cfg['experiment'],
                                      folder_cfg['images'],
-                                     algos[i] + '_' + problem],
-                          save=general_cfg['save_ind_algorithms'])
+                                     '{}_{}_k{}'.format(algos[i], problem, k)],
+                          save=general_cfg['save_ind_algorithms'],
+                          use_date=general_cfg['use_date'])
 
         if algo_cfg['termination'][0] == 'n_eval':
             algos_mean_hv_hist = get_hv_hist_vs_n_evals(algos_runs, algos_hv_hist_runs)
@@ -186,11 +193,13 @@ def run_multiple_problems(probs, algos, general_cfg, params, algo_cfg, prob_cfg,
         plot_runs(algos_mean_hv_hist,
                   x_label='Function Evaluations' if algo_cfg['termination'][0] == 'n_eval' else 'Generations',
                   y_label='Hypervolume',
-                  title='{} convergence plot. Ref={}'.format(problem, str(prob_cfg['hv_ref'])),
+                  title='{} k={} convergence plot. Ref={}'.format(problem, k, str(prob_cfg['hv_ref'])),
                   size=(15, 9),
-                  file_path=['output', folder_cfg['experiment'], folder_cfg['images'], 'Compare_' + problem],
+                  file_path=['output', folder_cfg['experiment'], folder_cfg['images'],
+                             'Compare_{}_k{}'.format(problem, k)],
                   save=general_cfg['save_comparison_plot'],
-                  legend_labels=algos)
+                  legend_labels=algos,
+                  use_date=general_cfg['use_date'])
 
         hvs_algos = array_from_lists([hv_hist_runs[:, -1] for hv_hist_runs in algos_hv_hist_runs])
         hvs_stats = mean_std_from_array(hvs_algos, labels=algos)
@@ -213,12 +222,12 @@ def run_multiple_problems(probs, algos, general_cfg, params, algo_cfg, prob_cfg,
                        algos,
                        x_label='Algorithm',
                        y_label='Hypervolume',
-                       title=problem + ' hypervolume history',
+                       title='{} k={} hypervolume history'.format(problem, k),
                        size=(15, 9),
                        file_path=['output',
                                   folder_cfg['experiment'],
                                   folder_cfg['images'],
-                                  'HVs_' + problem],
+                                  '{}_k{}_hv'.format(problem, k)],
                        save=general_cfg['save_stat_plots'],
                        show_grid=False,
                        use_date=general_cfg['use_date'])
@@ -227,12 +236,12 @@ def run_multiple_problems(probs, algos, general_cfg, params, algo_cfg, prob_cfg,
                        algos,
                        x_label='Algorithm',
                        y_label='Seconds',
-                       title=problem + ' execution times',
+                       title='{} k={} execution times'.format(problem, k),
                        size=(15, 9),
                        file_path=['output',
                                   folder_cfg['experiment'],
                                   folder_cfg['images'],
-                                  'Exec_Times_' + problem],
+                                  '{}_k{}_exec_t'.format(problem, k)],
                        save=general_cfg['save_stat_plots'],
                        show_grid=False,
                        use_date=general_cfg['use_date'])

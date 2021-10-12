@@ -16,7 +16,7 @@ def consolidate_results(results):
 
 def repeat(run_func, args, n_repeat, parallel=True):
     if parallel:
-        executor = Parallel(n_jobs=cpu_count())
+        executor = Parallel(n_jobs=-2)
         tasks = (delayed(run_func)(*args) for _ in tqdm(range(n_repeat)))
         result = executor(tasks)
     else:
@@ -29,7 +29,7 @@ def repeat_different_args(run_func, args, parallel=True):
         raise Exception('args have to be a list')
 
     if parallel:
-        executor = Parallel(n_jobs=cpu_count())
+        executor = Parallel(n_jobs=-2) #cpu_count()//2
         tasks = (delayed(run_func)(*arg) for arg in tqdm(args))
         result = executor(tasks)
     else:
@@ -44,7 +44,7 @@ def run_ga(ga, cfg):
 
 def repeat_eval(ga, n_repeat, cfg, parallel=True):
     if parallel:
-        executor = Parallel(n_jobs=cpu_count(), backend='multiprocessing')
+        executor = Parallel(n_jobs=-2, backend='loky') #cpu_count()
         tasks = (delayed(run_ga)(ga, cfg) for _ in range(n_repeat))
         logs = executor(tasks)
     else:

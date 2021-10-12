@@ -146,7 +146,8 @@ def plot_pop(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080),
 
 def plot_multiple_pop(pops, labels=None, legend_label='population', save=False, file_path=None, colors_ix=None,
                       label_scale=1, size=(1980, 1080), color_default=0, save_png=False, title='', opacities=None,
-                      opacity=1, prog_markers=False, prog_opacity=False, prog_color=True, plot_border=False):
+                      opacity=1, prog_markers=False, prog_opacity=False, prog_color=True, plot_border=False,
+                      use_date=False):
 
     colors_ix = np.ones(len(pops), dtype=int) * color_default if colors_ix is None else colors_ix
 
@@ -190,7 +191,7 @@ def plot_multiple_pop(pops, labels=None, legend_label='population', save=False, 
 
     if file_path is not None and save is True:
         time.sleep(1.5)
-        plotly_save(fig, file_path, size, save_png)
+        plotly_save(fig, file_path, size, save_png, use_date=use_date)
 
 
 def plot_gen_progress(pop_hist, step_size, file_path=None, title=None, save=False, color_ix=1, last_color_ix=0):
