@@ -41,14 +41,16 @@ def mean_std_from_array(arr, labels):
 
 def save_df(df, file_path=['results', 'res'], use_date=False):
     create_dir(file_path)
-    file_path = get_new_file_path(file_path, '.csv', use_date)
-    df.to_csv(os.path.join(*file_path))
+    path = os.path.join(get_new_file_path(file_path, '.csv', use_date))
+    print('Saving Dataframe to: \n{}'.format(path))
+    df.to_csv(path)
 
 
 def save_vars(vars, file_path=['results', 'res'], use_date=False):
     create_dir(file_path)
-    file_path = get_new_file_path(file_path, '.z', use_date)
-    joblib.dump(vars, os.path.join(*file_path))
+    path = os.path.join(get_new_file_path(file_path, '.z', use_date))
+    print('Saving Vars to: \n{}'.format(path))
+    joblib.dump(vars, path)
 
 
 def get_new_file_path(file_path, extension, use_date):
@@ -102,7 +104,7 @@ def unpack_results(file_path):
 
 
 def latex_table(title, tabbular_text):
-    table_str = '\\begin{table} \n\\begin{center}\n'
+    table_str = '\\begin{table}[h] \n\\begin{center}\n'
     table_str += '\\caption{{{0}}}\\label{{tbl:{1}}}\n'.format(title.upper().replace('_', ' '),
                                                                title.lower().replace(' ', '_'))
     table_str += tabbular_text

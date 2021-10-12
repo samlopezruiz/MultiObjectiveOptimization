@@ -6,39 +6,44 @@ import seaborn as sns
 
 from src.models.compare.winners import Winners
 from src.utils.util import files_with_substring, \
-    latex_table, write_text_file
+    latex_table, write_text_file, unpack_results, array_from_lists
 
 sns.set_theme('poster')
 
 if __name__ == '__main__':
     # %%
-    general_cfg = {'save_stats': True,
+    general_cfg = {'save_stats': False,
                    'use_date': False,
-                   'save_latex': True}
+                   'save_latex': False}
 
     in_folder_cfg = {'results': 'results',
                      'images': 'img',
-                     'experiment': 'all_n_eval',
-                     'file': 'hv'}
+                     'experiment': 'wfg123_n_eval',
+                     'hv_file': 'hv',
+                     'res_file': 'res'}
 
     out_folder_cfg = {'results': 'results',
                       'images': 'img',
-                      'experiment': 'winners_n_gen'}
+                      'experiment': 'winners_n_eval'}
 
-    probs = [('wfg1', 3), ('wfg2', 3), ('wfg3', 3), ('wfg4', 5),
-             ('wfg4', 6), ('wfg4', 7), ('wfg4', 8), ('wfg4', 9), ('wfg4', 10)]
+    probs = [('wfg1', 3), ('wfg2', 3), ('wfg3', 3)]
 
     algos = ['NSGA2', 'NSGA3', 'MOEAD', 'SMSEMOA']
     in_file_path = ['output', in_folder_cfg['experiment'], in_folder_cfg['results']]
     out_file_path = ['output', out_folder_cfg['experiment'], out_folder_cfg['results']]
 
     # Get mean and std dev results
-    std_algos_hv, mean_algos_hv, latex_algos_hv = [], [], []
+    std_algos_hv, mean_algos_hv, latex_algos_hv, problem_algos_hv = [], [], [], []
     for problem, k in probs:
-        file_ss = '{}_k{}_{}'.format(problem, k, in_folder_cfg['file'])
-        files = files_with_substring(in_file_path, file_ss)
-        if len(files) > 0:
-            df = pd.read_csv(os.path.join(*(in_file_path + [files[0]])), index_col=0)
+        hv_file_ss = '{}_k{}_{}'.format(problem, k, in_folder_cfg['hv_file'])
+        hv_files = files_with_substring(in_file_path, hv_file_ss)
+        res_file_ss = '{}_k{}_{}'.format(problem, k, in_folder_cfg['res_file'])
+        res_files = files_with_substring(in_file_path, res_file_ss)
+        if len(hv_files) > 0 and len(res_files) > 0:
+            res = unpack_results(in_file_path + [res_files[0]])
+            problem_algos_hv.append(array_from_lists([hv_hist[:, -1] for hv_hist in res['algos_hv_hist_runs']]))
+
+            df = pd.read_csv(os.path.join(*(in_file_path + [hv_files[0]])), index_col=0)
             latex_df = pd.DataFrame()
             latex_df['{} k={}'.format(problem, k)] = df['mean'].round(2).astype(str) + \
                                                      ' (' + df['std'].round(2).astype(str) + ')'
@@ -48,10 +53,12 @@ if __name__ == '__main__':
             latex_algos_hv.append(latex_df)
 
         else:
-            raise Exception('No file found with substring {}'.format(file_ss))
+            raise Exception('No file found with substring {}'.format(hv_file_ss))
 
     mean_algos_hv = pd.concat(mean_algos_hv, axis=1)
     std_algos_hv = pd.concat(std_algos_hv, axis=1)
+    problems_algos_hvs = [algos_hv[np.newaxis, :, :] for algos_hv in problem_algos_hv]
+    problems_algos_hvs = np.concatenate(problems_algos_hvs)
 
     if general_cfg['save_latex']:
         latex_df = pd.concat(latex_algos_hv, axis=1)
@@ -60,7 +67,7 @@ if __name__ == '__main__':
     # %%
     metric = np.negative(mean_algos_hv.values).T
     winners = Winners(metric, algos)
-    scores = winners.score()
+    scores = winners.score(problems_algos_hvs, alternative='greater')
 
     if general_cfg['save_latex']:
         output_text = ''

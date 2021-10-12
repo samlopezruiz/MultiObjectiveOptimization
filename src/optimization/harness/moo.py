@@ -162,9 +162,9 @@ def run_multiple_problems(probs, algos, general_cfg, params, algo_cfg, prob_cfg,
             sv = {'algos': algos, 'problem': problem, 'k': k, 'prob_cfg': prob_cfg, 'pops': pops,
                   'algo_cfg': algo_cfg, 'algos_hv_hist_runs': algos_hv_hist_runs}
             save_vars(sv,
-                      file_path=['output',
-                                 folder_cfg['experiment'],
-                                 folder_cfg['results'],
+                      path=['output',
+                            folder_cfg['experiment'],
+                            folder_cfg['results'],
                                  '{}_k{}_res'.format(problem, k)],
                       use_date=general_cfg['use_date'])
 

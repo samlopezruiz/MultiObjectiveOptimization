@@ -4,24 +4,22 @@ from src.utils.util import save_vars
 if __name__ == '__main__':
     # %%
     general_cfg = {'save_plots': True,
-                   'save_stats': True,
+                   'save_stats': False,
                    'use_date': False}
 
     folder_cfg = {'results': 'results',
                   'images': 'img',
                   'experiment': 'plot_all'}
 
-    prob_cfg = {'n_variables': 24,
-                'hv_ref': [5, 5, 5]}
+    prob_cfg = {'n_variables': 24}
 
-    algo_cfg = {'termination': ('n_eval', 2000),
+    algo_cfg = {'termination': ('n_gen', 500),
                 'pop_size': 60,
-                'hv_ref': [10, 10, 10],
-                'verbose': 2}
+                'verbose': 1}
 
     probs = [('wfg4', 5), ('wfg4', 6), ('wfg4', 7), ('wfg4', 8), ('wfg4', 9), ('wfg4', 10)]
-    # algos = ['NSGA2', 'NSGA3', 'MOEAD']  # , 'SMSEMOA']
-    algos = ['SMSEMOA']
+    algos = ['NSGA2', 'NSGA3', 'MOEAD']  # , 'SMSEMOA']
+    # algos = ['SMSEMOA']
 
     # %%
     for problem, k in probs:
@@ -33,7 +31,7 @@ if __name__ == '__main__':
             algos_run.append(run_moo_problem(algo,
                                              algo_cfg,
                                              prob_cfg,
-                                             plot=k == 3,
+                                             plot=True,
                                              verbose=algo_cfg['verbose'],
                                              file_path=['output',
                                                         folder_cfg['experiment'],
@@ -48,8 +46,8 @@ if __name__ == '__main__':
             sv = {'algos': algos, 'problem': problem, 'k': k, 'prob_cfg': prob_cfg, 'pops': pops,
                   'algo_cfg': algo_cfg, 'algo_hvs': algo_hvs}
             save_vars(sv,
-                      file_path=['output',
-                                 folder_cfg['experiment'],
-                                 folder_cfg['results'],
+                      path=['output',
+                            folder_cfg['experiment'],
+                            folder_cfg['results'],
                                  '{}_k{}_res'.format(problem, k)],
                       use_date=general_cfg['use_date'])

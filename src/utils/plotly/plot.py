@@ -101,14 +101,20 @@ def plot_results_moo(res, file_path=None, title=None, save_plots=False, use_date
 
     # Plot Optimum Solutions
     pop_hist = [gen.pop.get('F') for gen in res.history]
-    if res.opt.get('F').shape[1] == 3:
-        plot_multiple_pop([pop_hist[-1], res.opt.get('F')],
-                          labels=['population', 'optimum'],
-                          save=save_plots,
-                          opacities=[.2, 1],
-                          plot_border=True,
-                          file_path=file_path,
-                          title=title,
-                          use_date=use_date)
+    if res.opt.get('F').shape[1] > 3:
+        pop = pop_hist[-1][:, :3]
+        opt = res.opt.get('F')[:, :3]
+    elif res.opt.get('F').shape[1] == 3:
+        pop = pop_hist[-1]
+        opt = res.opt.get('F')
     else:
-        print('Objective space cannot be plotted. Shape={}'.format(res.opt.get('F').shape[1]))
+        print('Objective space: dim < 3. Shape={}'.format(res.opt.get('F').shape[1]))
+
+    plot_multiple_pop([pop, opt],
+                      labels=['population', 'optimum'],
+                      save=save_plots,
+                      opacities=[.2, 1],
+                      plot_border=True,
+                      file_path=file_path,
+                      title=title,
+                      use_date=use_date)
