@@ -7,7 +7,13 @@ from src.optimization.harness.moo import run_multiple_problems
 sns.set_theme('poster')
 
 if __name__ == '__main__':
-    # %%
+    '''
+    - is_reproductible: sets a consecutive seed for each of the executions.
+    - use_date saves the files using a datetime suffix
+    - probs: specifies the problems to solve with their respective k number of objectives
+    - termination can be specified as ('n_gen', #) or as ('n_eval', #) 
+    '''
+
     general_cfg = {'is_reproductible': True,
                    'n_repeat': 20,
                    'plot_ind_algorithms': True,
@@ -27,6 +33,7 @@ if __name__ == '__main__':
     algos = ['NSGA2', 'NSGA3', 'MOEAD'] #, 'SMSEMOA']
 
     prob_cfg = {'n_variables': 24}
+
     algo_cfg = {'termination': ('n_gen', 200), 'pop_size': 60}
     params = {'algo_cfg': algo_cfg, 'prob_cfg': prob_cfg, 'verbose': 0}
     t0 = time.time()
