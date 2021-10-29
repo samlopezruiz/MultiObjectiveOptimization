@@ -13,6 +13,44 @@ from src.utils.plotly.utils import plotly_save
 
 pio.renderers.default = "browser"
 
+'''
+aliceblue, antiquewhite, aqua, aquamarine, azure,
+beige, bisque, black, blanchedalmond, blue,
+blueviolet, brown, burlywood, cadetblue,
+chartreuse, chocolate, coral, cornflowerblue,
+cornsilk, crimson, cyan, darkblue, darkcyan,
+darkgoldenrod, darkgray, darkgrey, darkgreen,
+darkkhaki, darkmagenta, darkolivegreen, darkorange,
+darkorchid, darkred, darksalmon, darkseagreen,
+darkslateblue, darkslategray, darkslategrey,
+darkturquoise, darkviolet, deeppink, deepskyblue,
+dimgray, dimgrey, dodgerblue, firebrick,
+floralwhite, forestgreen, fuchsia, gainsboro,
+ghostwhite, gold, goldenrod, gray, grey, green,
+greenyellow, honeydew, hotpink, indianred, indigo,
+ivory, khaki, lavender, lavenderblush, lawngreen,
+lemonchiffon, lightblue, lightcoral, lightcyan,
+lightgoldenrodyellow, lightgray, lightgrey,
+lightgreen, lightpink, lightsalmon, lightseagreen,
+lightskyblue, lightslategray, lightslategrey,
+lightsteelblue, lightyellow, lime, limegreen,
+linen, magenta, maroon, mediumaquamarine,
+mediumblue, mediumorchid, mediumpurple,
+mediumseagreen, mediumslateblue, mediumspringgreen,
+mediumturquoise, mediumvioletred, midnightblue,
+mintcream, mistyrose, moccasin, navajowhite, navy,
+oldlace, olive, olivedrab, orange, orangered,
+orchid, palegoldenrod, palegreen, paleturquoise,
+palevioletred, papayawhip, peachpuff, peru, pink,
+plum, powderblue, purple, red, rosybrown,
+royalblue, rebeccapurple, saddlebrown, salmon,
+sandybrown, seagreen, seashell, sienna, silver,
+skyblue, slateblue, slategray, slategrey, snow,
+springgreen, steelblue, tan, teal, thistle, tomato,
+turquoise, violet, wheat, white, whitesmoke,
+yellow, yellowgreen
+ '''
+
 colors = [
     '#1f77b4',  # muted blue
     '#2ca02c',  # cooked asparagus green
@@ -23,8 +61,7 @@ colors = [
     '#e377c2',  # raspberry yogurt pink
     '#7f7f7f',  # middle gray
     '#bcbd22',  # curry yellow-green
-    '#17becf'  # blue-teal
-    'rgba(0, 0, 0, 0)' #transparent ix=
+    '#17becf',  # blue-teal
 ]
 
 marker_symbols = ['circle', 'x', 'cross', 'circle-open']
@@ -71,9 +108,9 @@ def add_3d_scatter_trace(data, name=None, color_ix=0, markersize=5, marker_symbo
         opacity=opacity,
         marker_symbol=marker_symbol,
         marker=dict(size=markersize,
-                    color='rgba(0, 0, 0, 0)' if transparent_fill else colors[color_ix],
+                    color='rgba(0, 0, 0, 0)' if transparent_fill else colors[color_ix % 10],
                     line=dict(
-                        color=colors[color_ix],
+                        color=colors[color_ix % 10],
                         width=line_width
                     ) if line_width is not None else None)
     )
@@ -144,10 +181,26 @@ def plot_pop(pop, save=False, file_path=None, label_scale=1, size=(1980, 1080),
         plotly_save(fig, file_path, size, save_png)
 
 
-def plot_multiple_pop(pops, labels=None, legend_label='population', save=False, file_path=None, colors_ix=None,
-                      label_scale=1, size=(1980, 1080), color_default=0, save_png=False, title='', opacities=None,
-                      opacity=1, prog_markers=False, prog_opacity=False, prog_color=True, plot_border=False,
-                      use_date=False):
+def plot_multiple_pop(pops,
+                      pair_lines=None,
+                      labels=None,
+                      legend_label='population',
+                      save=False,
+                      file_path=None,
+                      colors_ix=None,
+                      label_scale=1,
+                      size=(1980, 1080),
+                      color_default=0,
+                      save_png=False,
+                      title='',
+                      opacities=None,
+                      opacity=1,
+                      prog_markers=False,
+                      prog_opacity=False,
+                      prog_color=True,
+                      plot_border=False,
+                      use_date=False,
+                      plot_nadir=True):
 
     colors_ix = np.ones(len(pops), dtype=int) * color_default if colors_ix is None else colors_ix
 
@@ -162,7 +215,9 @@ def plot_multiple_pop(pops, labels=None, legend_label='population', save=False, 
     # Population
     for i, F in enumerate(Fs):
         op = i / len(Fs) if prog_opacity else (opacity if opacities is None else opacities[i])
-        traces.append(add_3d_scatter_trace(F, color_ix=i if prog_color else colors_ix[i], markersize=5,
+        traces.append(add_3d_scatter_trace(F,
+                                           color_ix=i if prog_color else colors_ix[i],
+                                           markersize=5,
                                            opacity=op,
                                            marker_symbol=marker_symbols[i] if prog_markers else 'circle',
                                            name=legend_label + ' ' + str(i) if labels is None else labels[i]))
@@ -172,11 +227,16 @@ def plot_multiple_pop(pops, labels=None, legend_label='population', save=False, 
                                                marker_symbol='circle', legend=False))
     # Ideal and worst point
     traces.append(
-        add_3d_scatter_trace(best_point.reshape(1, -1), name='ideal_point', color_ix=2, markersize=10,
+        add_3d_scatter_trace(best_point.reshape(1, -1), name='ideal_point', color_ix=5, markersize=10,
                              marker_symbol='cross'))
-    traces.append(
-        add_3d_scatter_trace(worst_point.reshape(1, -1), name='ndir_point', color_ix=5, markersize=10,
-                             marker_symbol='cross'))
+    if plot_nadir:
+        traces.append(
+            add_3d_scatter_trace(worst_point.reshape(1, -1), name='ndir_point', color_ix=2, markersize=10,
+                                 marker_symbol='cross'))
+
+    if pair_lines is not None:
+        pair_traces = [add_3d_scatter_trace(pair, name=None, color_ix=7, mode='lines', legend=False) for pair in pair_lines]
+        traces += pair_traces
 
     fig = go.Figure(data=traces)
     fig.update_layout(scene=dict(

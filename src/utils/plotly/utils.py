@@ -57,8 +57,6 @@ def plotly_save(fig, file_path, size, save_png=False, use_date=False):
     create_dir(file_path)
     image_path = get_new_file_path(file_path, '.png', use_date)
     html_path = get_new_file_path(file_path, '.html', use_date)
-    # image_path = file_path[:-1].copy() + [file_path[-1] + '_' + datetime.datetime.now().strftime("%Y_%m_%d_%H-%M") + ".png"]
-    # html_path = file_path[:-1].copy() + [file_path[-1] + '_' + datetime.datetime.now().strftime("%Y_%m_%d_%H-%M") + ".html"]
     if size is None:
         size = (1980, 1080)
 

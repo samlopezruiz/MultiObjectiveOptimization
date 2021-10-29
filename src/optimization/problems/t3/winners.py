@@ -41,7 +41,7 @@ if __name__ == '__main__':
         res_files = files_with_substring(in_file_path, res_file_ss)
         if len(hv_files) > 0 and len(res_files) > 0:
             res = unpack_results(in_file_path + [res_files[0]])
-            problem_algos_hv.append(array_from_lists([hv_hist[:, -1] for hv_hist in res['algos_hv_hist_runs']]))
+            problem_algos_hv.append(array_from_lists([hv_hist[:, -1] for hv_hist in res[5]]))
 
             df = pd.read_csv(os.path.join(*(in_file_path + [hv_files[0]])), index_col=0)
             latex_df = pd.DataFrame()

@@ -1,0 +1,8 @@
+cd D:\MEGA\CienciasDeLaComputacion\Tesis\CodeProjectTimeSeries\src\timeseries\experiments\market\irace
+conda activate r4-env
+R
+library('irace')
+irace.cmdline('--target-runner target-runner.bat')
+load("irace.Rdata")
+
+getFinalElites(logFile = "irace.Rdata", n = 0)

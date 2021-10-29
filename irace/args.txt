@@ -1,0 +1,1 @@
+['../irace_main.py', '--epsilon_archive=0.04', '--increase_pop_factor=5', '--global_steps=2', '--n_parallel_gen=26', '--datfile', 'c31-3.dat']

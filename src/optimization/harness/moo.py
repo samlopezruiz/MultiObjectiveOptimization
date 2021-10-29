@@ -9,6 +9,8 @@ from pymoo.factory import get_termination, get_problem, get_sampling, get_crosso
     get_reference_directions
 from pymoo.optimize import minimize
 
+from src.models.moo.external_archive import minimize_problem
+from src.models.moo.nsga3 import NSGA3_parallel
 from src.models.moo.smsemoa import SMSEMOA
 from src.models.moo.utils.indicators import get_hypervolume
 from src.models.moo.utils.utils import get_moo_args
@@ -25,19 +27,19 @@ def run_moo(problem, algorithm, algo_cfg, verbose=1, seed=None):
     termination = get_termination(algo_cfg['termination'][0], algo_cfg['termination'][1])
 
     t0 = time.time()
-    res = minimize(problem,
-                   algorithm,
-                   termination,
-                   seed=seed,
-                   save_history=True,
-                   verbose=verbose >= 2)
+    res, archive = minimize_problem(problem,
+                                    algorithm,
+                                    termination,
+                                    seed=seed,
+                                    save_history=True,
+                                    verbose=verbose >= 2)
 
     opt_time = time.time() - t0
     if verbose >= 1:
         print('{} with {} finished in {}s'.format(get_type_str(problem), get_type_str(algorithm), round(opt_time, 4)))
 
     pop_hist = [gen.pop.get('F') for gen in res.history]
-    result = {'res': res, 'pop_hist': pop_hist, 'opt_time': opt_time}
+    result = {'res': res, 'pop_hist': pop_hist, 'opt_time': opt_time, 'archive': archive}
     return result
 
 
@@ -46,15 +48,16 @@ def create_title(prob_cfg, algo_cfg, algorithm):
            get_type_str(algorithm) + ' CFG: ' + str(algo_cfg)
 
 
-def get_algorithm(name, algo_cfg, n_obj=3):
-    algo_options = ['SMSEMOA', 'MOEAD', 'NSGA2', 'NSGA3']
+def get_algorithm(name, algo_cfg, n_obj=3, ref_dirs=None, save_history=True):
+    algo_options = ['SMSEMOA', 'MOEAD', 'NSGA2', 'NSGA3', 'NSGA3_parallel']
     if name not in algo_options:
         raise Exception('Algorithm {} not valid. Options are: {}'.format(name, str(algo_options)))
 
     cbx_pb = algo_cfg.get('cbx_pb', 0.9)
     cbx_eta = algo_cfg.get('cbx_eta', 15)
     mut_eta = algo_cfg.get('mut_eta', 20)
-    ref_dirs = get_reference_directions("energy", n_obj, algo_cfg['pop_size'])
+    if ref_dirs is None:
+        ref_dirs = get_reference_directions("energy", n_obj, algo_cfg['pop_size'])
     if name == 'SMSEMOA':
         algorithm = SMSEMOA(
             ref_point=algo_cfg['hv_ref'],
@@ -62,7 +65,8 @@ def get_algorithm(name, algo_cfg, n_obj=3):
             sampling=get_sampling("real_random"),
             crossover=get_crossover("real_sbx", prob=cbx_pb, eta=cbx_eta),
             mutation=get_mutation("real_pm", eta=mut_eta),
-            eliminate_duplicates=True
+            eliminate_duplicates=True,
+            save_history=save_history
         )
     elif name == 'MOEAD':
         algorithm = MOEAD(
@@ -72,6 +76,7 @@ def get_algorithm(name, algo_cfg, n_obj=3):
             ref_dirs=ref_dirs,
             n_neighbors=15,
             prob_neighbor_mating=0.7,
+            save_history=save_history
         )
     elif name == 'NSGA2':
         algorithm = NSGA2(
@@ -80,7 +85,8 @@ def get_algorithm(name, algo_cfg, n_obj=3):
             crossover=get_crossover("real_sbx", prob=cbx_pb, eta=cbx_eta),
             mutation=get_mutation("real_pm", eta=mut_eta),
             eliminate_duplicates=True,
-            ref_dirs=ref_dirs
+            ref_dirs=ref_dirs,
+            save_history=save_history
         )
     elif name == 'NSGA3':
         algorithm = NSGA3(
@@ -89,7 +95,18 @@ def get_algorithm(name, algo_cfg, n_obj=3):
             crossover=get_crossover("real_sbx", prob=cbx_pb, eta=cbx_eta),
             mutation=get_mutation("real_pm", eta=mut_eta),
             eliminate_duplicates=True,
-            ref_dirs=ref_dirs
+            ref_dirs=ref_dirs,
+            save_history=save_history
+        )
+    elif name == 'NSGA3_parallel':
+        algorithm = NSGA3_parallel(
+            pop_size=algo_cfg['pop_size'],
+            sampling=get_sampling("real_random"),
+            crossover=get_crossover("real_sbx", prob=cbx_pb, eta=cbx_eta),
+            mutation=get_mutation("real_pm", eta=mut_eta),
+            eliminate_duplicates=True,
+            ref_dirs=ref_dirs,
+            save_history=save_history
         )
 
     return algorithm
@@ -105,11 +122,15 @@ def run_moo_problem(name,
                     verbose=1,
                     seed=None,
                     use_date=False):
+
     problem = get_problem(prob_cfg['name'],
                           n_var=prob_cfg['n_variables'],
                           n_obj=prob_cfg['n_obj']) if problem is None else problem
 
-    algorithm = get_algorithm(name, algo_cfg, n_obj=prob_cfg['n_obj'])
+    algorithm = get_algorithm(name,
+                              algo_cfg,
+                              n_obj=prob_cfg['n_obj'],
+                              ref_dirs=algo_cfg.get('ref_dirs', None))
 
     algo_cfg['name'] = get_type_str(algorithm)
     result = run_moo(problem, algorithm, algo_cfg, verbose=verbose, seed=seed)
@@ -122,9 +143,14 @@ def run_moo_problem(name,
                          use_date=use_date)
 
     hv_pop = get_hypervolume(result['pop_hist'][-1], prob_cfg['hv_ref'])
-    hv_opt = None #get_hypervolume(result['res'].opt.get('F'), prob_cfg['hv_ref'])
+    hv_opt = None  # get_hypervolume(result['res'].opt.get('F'), prob_cfg['hv_ref'])
 
-    problem_result = {'result': result, 'hv_pop': hv_pop, 'hv_opt': hv_opt}
+    problem_result = {'result': result,
+                      'hv': hv_pop,
+                      'hv_opt': hv_opt,
+                      'op': len(result['res'].opt)/algorithm.ref_dirs.shape[0],
+                      'time': result['opt_time']}
+
     return problem_result
 
 
@@ -165,7 +191,7 @@ def run_multiple_problems(probs, algos, general_cfg, params, algo_cfg, prob_cfg,
                       path=['output',
                             folder_cfg['experiment'],
                             folder_cfg['results'],
-                                 '{}_k{}_res'.format(problem, k)],
+                            '{}_k{}_res'.format(problem, k)],
                       use_date=general_cfg['use_date'])
 
         if general_cfg['plot_ind_algorithms']:

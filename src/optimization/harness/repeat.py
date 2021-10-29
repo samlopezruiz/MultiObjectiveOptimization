@@ -24,13 +24,15 @@ def repeat(run_func, args, n_repeat, parallel=True):
     return result
 
 
-def repeat_different_args(run_func, args, parallel=True):
+def repeat_different_args(run_func, args, parallel=True, n_jobs=None, backend=None,  verbose=0):
     if not isinstance(args, list):
         raise Exception('args have to be a list')
 
     if parallel:
-        executor = Parallel(n_jobs=-2) #cpu_count()//2
-        tasks = (delayed(run_func)(*arg) for arg in tqdm(args))
+        if n_jobs is None:
+            n_jobs = cpu_count()
+        executor = Parallel(n_jobs=n_jobs, backend=backend, verbose=0) #cpu_count()//2
+        tasks = (delayed(run_func)(*arg) for arg in (tqdm(args) if verbose > 0 else args))
         result = executor(tasks)
     else:
         result = [run_func(*arg) for arg in tqdm(args)]

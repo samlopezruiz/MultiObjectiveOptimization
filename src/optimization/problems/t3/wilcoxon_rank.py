@@ -14,9 +14,9 @@ sns.set_theme('poster')
 
 if __name__ == '__main__':
     # %%
-    general_cfg = {'save_stats': True,
+    general_cfg = {'save_stats': False,
                    'use_date': False,
-                   'save_latex': True}
+                   'save_latex': False}
 
     in_folder_cfg = {'results': 'results',
                      'images': 'img',
